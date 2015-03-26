@@ -10,7 +10,7 @@ namespace ARS.Models
     public class Employee
     {
         [Column(Name = "id",IsPrimaryKey=true)]
-        public int id { get; set; }
+        public int? id { get; set; }
 
         [Column(Name = "username")]
         public string username { get; set; }
@@ -20,6 +20,9 @@ namespace ARS.Models
 
         [Column(Name = "truename")]
         public string truename { get; set; }
+
+        [Column(Name = "mac_address")]
+        public string mac_address { get; set; }
 
     }
 }

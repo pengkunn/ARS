@@ -7,35 +7,59 @@ using System.Data.SQLite;
 using System.Data;
 using System.Data.Linq;
 using ARS.Models;
+using ARS.Common;
 
 namespace ARS.Controllers
 {
     public class HomeController : Controller
     {
+        public string username = "";
         //
         // GET: /Home/
 
         public ActionResult Index()
         {
+            string ip;
+            if (this.HttpContext.Request.ServerVariables["HTTP_VIA"] != null)
+            {
+                ip = this.HttpContext.Request.ServerVariables["HTTP_X_FORWARDED_FOR"].ToString();
+            }
+            else
+            {
+                ip = this.HttpContext.Request.ServerVariables["REMOTE_ADDR"].ToString();
+            }
 
-            var strCon = System.Configuration.ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
-            SQLiteConnection con = new SQLiteConnection(strCon);
-            //SQLiteCommand cmd = new SQLiteCommand("select * from Employee", con);
-            //SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
-            //DataTable dt = new DataTable();
-            //da.Fill(dt);
-            //var s = dt.Rows[0].ItemArray[0];
-            //dataGridView1.DataSource = dt;
-
-
-            var context = new DataContext(con);
+            var context = DbHelper.getInstance().getDbContext();
 
             var employees = context.GetTable<Employee>();
 
-            Employee newEmployee = new Employee() {id=2,password="1",truename="test",username="test" };
+            var query = from e in employees
+                       where e.username == "test1"
+                       select e;
 
-            employees.InsertOnSubmit(newEmployee);
+            //Employee newEmployee = new Employee() { id = null, password = "1", truename = "test4", username = "test4", mac_address = ip };
 
+            //employees.InsertOnSubmit(newEmployee);
+
+            TempData["user"] = query.Single();
+            //ViewBag.employee = query.Single();
+
+
+            return View();
+        }
+
+        public ActionResult Signin()
+        {
+            if (TempData["user"] == null)
+                return View();
+
+            var context = DbHelper.getInstance().getDbContext();
+
+            var attendanceRecords = context.GetTable<AttendanceRecord>();
+
+            var ar = new AttendanceRecord() { id = null, user_id = ((Employee)TempData["user"]).id.Value, type = 1, sign_time = DateTime.Now};
+
+            attendanceRecords.InsertOnSubmit(ar);
             context.SubmitChanges();
 
             return View();
