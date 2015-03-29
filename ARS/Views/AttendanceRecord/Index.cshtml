@@ -1,0 +1,84 @@
+﻿@model IEnumerable<ARS.Models.AttendanceRecord>
+
+@{
+    ViewBag.Title = "签到记录";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.truename</h2>
+
+<p>
+    @if (!ViewBag.isSignIn)
+    {
+        @Html.ActionLink("签到", "SignIn")
+    }
+    else if (ViewBag.isSignIn && !ViewBag.isSignOut)
+    {
+        @Html.ActionLink("签退", "SignOut")
+    }
+    else
+    { 
+    
+    }
+
+    @if(TempData["SignInSuccess"]!=null)
+    {
+        if ((bool)TempData["SignInSuccess"])
+        {
+            <p>签到成功</p>
+        }
+        else
+        {
+            <p>签到失败</p>
+        }
+    }
+
+    @if (TempData["SignOutSuccess"] != null)
+    {
+        if ((bool)TempData["SignOutSuccess"])
+        {
+            <p>签退成功</p>
+        }
+        else
+        {
+            <p>签退失败</p>
+        }
+    }
+
+
+
+</p>
+<table>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.user_id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.typeName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.sign_time)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.user_id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.typeName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.sign_time)
+        </td>
+        <td>
+            @*@Html.ActionLink("Edit", "Edit", new { id=item.id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.id })*@
+        </td>
+    </tr>
+}
+
+</table>

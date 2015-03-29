@@ -19,6 +19,12 @@ namespace ARS.Controllers
 
         public ActionResult Index()
         {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Index(string username, string encryptPassword, bool rememberMe)
+        {
             string ip;
             if (this.HttpContext.Request.ServerVariables["HTTP_VIA"] != null)
             {
@@ -34,36 +40,21 @@ namespace ARS.Controllers
             var employees = context.GetTable<Employee>();
 
             var query = from e in employees
-                       where e.username == "test1"
-                       select e;
+                        where e.username == username &&
+                        e.password == encryptPassword
+                        select e;
 
-            //Employee newEmployee = new Employee() { id = null, password = "1", truename = "test4", username = "test4", mac_address = ip };
-
-            //employees.InsertOnSubmit(newEmployee);
-
-            TempData["user"] = query.Single();
-            //ViewBag.employee = query.Single();
-
-
-            return View();
-        }
-
-        public ActionResult Signin()
-        {
-            if (TempData["user"] == null)
-                return View();
-
-            var context = DbHelper.getInstance().getDbContext();
-
-            var attendanceRecords = context.GetTable<AttendanceRecord>();
-
-            var ar = new AttendanceRecord() { id = null, user_id = ((Employee)TempData["user"]).id.Value, type = 1, sign_time = DateTime.Now};
-
-            attendanceRecords.InsertOnSubmit(ar);
-            context.SubmitChanges();
+            if (query.Count() > 0)
+            {
+                Session["user"] = query.Single();
+                //TempData["user"] = query.Single();
+                return RedirectToAction("Index", "AttendanceRecord");
+            }
 
             return View();
         }
+
+
 
     }
 }

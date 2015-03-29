@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Linq.Mapping;
 using System.Linq;
 using System.Web;
@@ -10,6 +11,7 @@ namespace ARS.Models
     public class Employee
     {
         [Column(Name = "id",IsPrimaryKey=true)]
+        [DisplayName("id")]
         public int? id { get; set; }
 
         [Column(Name = "username")]

@@ -1,0 +1,44 @@
+﻿@model ARS.Models.AttendanceRecord
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>View1</title>
+</head>
+<body>
+    <fieldset>
+        <legend>AttendanceRecord</legend>
+    
+        <div class="display-label">
+             @Html.DisplayNameFor(model => model.user_id)
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.user_id)
+        </div>
+    
+        <div class="display-label">
+             @Html.DisplayNameFor(model => model.type)
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.type)
+        </div>
+    
+        <div class="display-label">
+             @Html.DisplayNameFor(model => model.sign_time)
+        </div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.sign_time)
+        </div>
+    </fieldset>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id=Model.id }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+</body>
+</html>
