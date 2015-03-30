@@ -23,8 +23,8 @@ namespace ARS.Models
         [Column(Name = "truename")]
         public string truename { get; set; }
 
-        [Column(Name = "mac_address")]
-        public string mac_address { get; set; }
+        [Column(Name = "last_ip")]
+        public string last_ip { get; set; }
 
     }
 }

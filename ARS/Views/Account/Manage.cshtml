@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "修改密码";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    function encrypt() {
+        $("#encryptOldPassword").val($.md5($("#oldPassword").val()));
+        $("#encryptNewPassword").val($.md5($("#newPassword").val()));
+        $("#encryptConfirmPassword").val($.md5($("#confirmPassword").val()));
+    }
+</script>
+<hgroup class="title">
+    <h1>@ViewBag.Title</h1>
+</hgroup>
+
+<p class="message-success">@ViewBag.StatusMessage</p>
+
+@using (Html.BeginForm())
+{
+    <fieldset>
+        <legend>修改密码</legend>
+        <ol>
+            <li>
+                @Html.Label("当前密码")
+                @Html.Password("oldPassword")
+                @Html.Hidden("encryptOldPassword")
+            </li>
+            <li>
+                @Html.Label("新密码")
+                @Html.Password("newPassword")
+                @Html.Hidden("encryptNewPassword")
+            </li>
+            <li>
+                @Html.Label("密码确认")
+                @Html.Password("confirmPassword")
+                @Html.Hidden("encryptConfirmPassword")
+            </li>
+            <li>
+                <input id="Submit1" onclick="encrypt()" type="submit" value="确定" />
+            </li>
+        </ol>
+    </fieldset>
+
+}
+
+

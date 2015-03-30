@@ -19,11 +19,12 @@ namespace ARS.Controllers
 
             ViewBag.truename = user.truename;
 
-            var context = DbHelper.getInstance().getDbContext();
+            var context = DbHelper.getInstance().createDbContext();
             var attendanceRecords = context.GetTable<AttendanceRecord>();
 
             var query = from ar in attendanceRecords
                         where ar.user_id == user.id.Value
+                        orderby ar.sign_time descending
                         select ar;
 
             //查找当天的签到记录
@@ -147,7 +148,7 @@ namespace ARS.Controllers
             if (Session["user"] == null)
                 return RedirectToAction("Index","Home");
 
-            var context = DbHelper.getInstance().getDbContext();
+            var context = DbHelper.getInstance().createDbContext();
 
             var attendanceRecords = context.GetTable<AttendanceRecord>();
 
@@ -181,7 +182,7 @@ namespace ARS.Controllers
             if (Session["user"] == null)
                 return RedirectToAction("Index","Home");
 
-            var context = DbHelper.getInstance().getDbContext();
+            var context = DbHelper.getInstance().createDbContext();
 
             var attendanceRecords = context.GetTable<AttendanceRecord>();
 

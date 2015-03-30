@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "LogIn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.md5.js"></script>
+<script src="~/Scripts/jquery-2.1.3.min.js"></script>
+<script>
+    function encrypt() {
+        $("#encryptPassword").val($.md5($("#password").val()));
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    <fieldset>
+        <legend>用户登录</legend>
+        <ol>
+            <li>
+                @Html.Label("用户名")
+                @Html.TextBox("username")
+            </li>
+            <li>
+                @Html.Label("密码")
+                @*<input id="password" type="password" />*@
+                @Html.Password("password")
+                @Html.Hidden("encryptPassword")
+            </li>
+            <li>
+                @Html.Label("自动登录")
+                @Html.CheckBox("rememberMe")
+            </li>
+            <li>
+                <input id="Submit1" onclick="encrypt()" type="submit" value="登录" />
+            </li>
+        </ol>
+    </fieldset>
+
+}

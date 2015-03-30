@@ -34,5 +34,12 @@ namespace ARS.Common
         {
             return _context;
         }
+
+        public DataContext createDbContext()
+        {
+            var strCon = System.Configuration.ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
+            SQLiteConnection con = new SQLiteConnection(strCon);
+            return new DataContext(con);
+        }
     }
 }
