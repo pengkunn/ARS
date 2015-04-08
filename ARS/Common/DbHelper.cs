@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Linq;
-using System.Data.SQLite;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Web;
+using System.Data.Entity;
+using MySql.Data.Entity;
+using ARS.Models;
 
 namespace ARS.Common
 {
@@ -22,12 +25,13 @@ namespace ARS.Common
         }
 
         DataContext _context = null;
+        ARSEntitis _db = null;
 
         public DbHelper()
         {
-            var strCon = System.Configuration.ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
-            SQLiteConnection con = new SQLiteConnection(strCon);
-            _context = new DataContext(con);
+            //var strCon = System.Configuration.ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
+            //MySqlConnection con = new MySqlConnection(strCon);
+            //_context = new DataContext(con);
         }
 
         public DataContext getDbContext()
@@ -38,8 +42,18 @@ namespace ARS.Common
         public DataContext createDbContext()
         {
             var strCon = System.Configuration.ConfigurationManager.ConnectionStrings["conn"].ConnectionString;
-            SQLiteConnection con = new SQLiteConnection(strCon);
+            MySqlConnection con = new MySqlConnection(strCon);
             return new DataContext(con);
         }
+
+        public ARSEntitis getDB()
+        {
+            if (_db==null)
+            {
+                _db = new ARSEntitis();
+
+            }
+            return _db;
+        }  
     }
 }

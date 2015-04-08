@@ -1,5 +1,6 @@
 ﻿using ARS.Common;
 using ARS.Models;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +19,11 @@ namespace ARS.Controllers
         {
             if (Request.IsAuthenticated)
             {
-                var context = DbHelper.getInstance().createDbContext();
+                //var context = DbHelper.getInstance().createDbContext();
 
-                var employees = context.GetTable<Employee>();
-
-                var query = from e in employees
+                //var employees = context.GetTable<Employee>();
+                var db = new ARSEntitis();
+                var query = from e in db.Employees
                             where e.username == User.Identity.Name
                             select e;
 
@@ -30,7 +31,12 @@ namespace ARS.Controllers
 
                 return RedirectToAction("Index", "AttendanceRecord");
             }
-                
+
+
+
+            //.Departments.Add(dep);
+            //db.SaveChanges(); 
+
 
             return View();
         }
@@ -38,6 +44,56 @@ namespace ARS.Controllers
         [HttpPost]
         public ActionResult LogIn(string username, string encryptPassword, bool rememberMe)
         {
+
+            //string connectionString = "server=localhost;port=3306;database=ars;uid=root;";
+
+            //using (MySqlConnection connection = new MySqlConnection(connectionString))
+            //{
+            //    // Create database if not exists
+            //    using (ARSEntitis contextDB = new ARSEntitis(connection, false))
+            //    {
+            //        contextDB.Database.CreateIfNotExists();
+            //    }
+
+            //    connection.Open();
+            //    MySqlTransaction transaction = connection.BeginTransaction();
+
+            //    try
+            //    {
+            //        // DbConnection that is already opened
+            //        using (ARSEntitis context = new ARSEntitis(connection, false))
+            //        {
+
+            //            // Interception/SQL logging
+            //            context.Database.Log = (string message) => { Console.WriteLine(message); };
+
+            //            // Passing an existing transaction to the context
+            //            context.Database.UseTransaction(transaction);
+
+            //            // DbSet.AddRange
+            //            //List<Employee> Employees = new List<Employee>();
+
+            //            //Employees.Add(new Employee { Manufacturer = "Nissan", Model = "370Z", Year = 2012 });
+            //            //Employees.Add(new Employee { Manufacturer = "Ford", Model = "Mustang", Year = 2013 });
+            //            //Employees.Add(new Employee { Manufacturer = "Chevrolet", Model = "Camaro", Year = 2012 });
+            //            //Employees.Add(new Employee { Manufacturer = "Dodge", Model = "Charger", Year = 2013 });
+            //            Employee em = new Employee {  username = username, password = encryptPassword, truename = "sdd" };
+
+            //            context.Employees.Add(em);
+
+            //            context.SaveChanges();
+            //        }
+
+            //        transaction.Commit();
+            //    }
+            //    catch
+            //    {
+            //        transaction.Rollback();
+            //        throw;
+            //    }
+            //}
+
+
             string ip;
             if (this.HttpContext.Request.ServerVariables["HTTP_VIA"] != null)
             {
@@ -48,11 +104,11 @@ namespace ARS.Controllers
                 ip = this.HttpContext.Request.ServerVariables["REMOTE_ADDR"].ToString();
             }
 
-            var context = DbHelper.getInstance().createDbContext();
 
-            var employees = context.GetTable<Employee>();
+            var db = new ARSEntitis();
+            //var employees = ;
 
-            var query = from e in employees
+            var query = from e in db.Employees
                         where e.username == username &&
                         e.password == encryptPassword
                         select e;
@@ -99,7 +155,7 @@ namespace ARS.Controllers
 
             if (encryptNewPassword != encryptConfirmPassword)
             {
-               // ViewBag.Success = false;
+                // ViewBag.Success = false;
                 ViewBag.StatusMessage = "两次输入密码不一致";
                 return View();
             }

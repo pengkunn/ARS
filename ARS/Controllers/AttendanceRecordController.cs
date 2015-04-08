@@ -19,29 +19,29 @@ namespace ARS.Controllers
 
             ViewBag.truename = user.truename;
 
-            var context = DbHelper.getInstance().createDbContext();
-            var attendanceRecords = context.GetTable<AttendanceRecord>();
+            var db = new ARSEntitis();
 
-            var query = from ar in attendanceRecords
-                        where ar.user_id == user.id.Value
-                        orderby ar.sign_time descending
-                        select ar;
+            //var attendanceRecords = DbHelper.getInstance().getDB().AttendanceRecords;
+
+
 
             //查找当天的签到记录
-            var query2 = from ar2 in attendanceRecords
+            var todayDate = DateTime.Now.Date;
+            var nextDate = todayDate.AddDays(1).Date;
+            var query2 = from ar2 in db.AttendanceRecords
                         where ar2.user_id == user.id.Value &&
-                        ar2.sign_time > DateTime.Now.Date &&
-                        ar2.sign_time < DateTime.Now.AddDays(1).Date &&
+                        ar2.sign_time > todayDate &&
+                        ar2.sign_time < nextDate &&
                         ar2.type == 1
                         select ar2;
 
             ViewBag.isSignIn = (query2.Count() > 0);
 
             //查找当天的签退记录
-            var query3 = from ar3 in attendanceRecords
+            var query3 = from ar3 in db.AttendanceRecords
                          where ar3.user_id == user.id.Value &&
-                         ar3.sign_time > DateTime.Now.Date &&
-                         ar3.sign_time < DateTime.Now.AddDays(1).Date &&
+                         ar3.sign_time > todayDate &&
+                         ar3.sign_time < nextDate &&
                          ar3.type == 2
                          select ar3;
 
@@ -51,7 +51,10 @@ namespace ARS.Controllers
 
 
 
-
+            var query = from ar in db.AttendanceRecords
+                        where ar.user_id == user.id.Value
+                        orderby ar.sign_time descending
+                        select ar;
 
             return View(query.ToList());
         }
@@ -148,28 +151,33 @@ namespace ARS.Controllers
             if (Session["user"] == null)
                 return RedirectToAction("Index","Home");
 
-            var context = DbHelper.getInstance().createDbContext();
 
-            var attendanceRecords = context.GetTable<AttendanceRecord>();
+            var db = new ARSEntitis();
 
+            var todayDate = DateTime.Now.Date;
+            var nextDate = todayDate.AddDays(1).Date;
+
+            var id = ((Employee)Session["user"]).id.Value;
             //已存在签到记录，不允许签到
-            var query = from ar in attendanceRecords
-                        where ar.user_id == ((Employee)Session["user"]).id.Value &&
-                        ar.sign_time > DateTime.Now.Date &&
-                        ar.sign_time < DateTime.Now.AddDays(1).Date &&
+            var query = from ar in db.AttendanceRecords
+                        where ar.user_id == id &&
+                        ar.sign_time > todayDate &&
+                        ar.sign_time < nextDate &&
                         ar.type == 1
                         select ar;
             if (query.Count() > 0)
             {
                 TempData["SignInSuccess"] = false;
+                TempData["ErrorInfo"] = "今日已经签到！";
             }
             else
             {
                 TempData["SignInSuccess"] = true;
-                var signinRecord = new AttendanceRecord() { id = null, user_id = ((Employee)Session["user"]).id.Value, type = 1, sign_time = DateTime.Now };
+                var signinRecord = new AttendanceRecord() { user_id = ((Employee)Session["user"]).id.Value, type = 1, sign_time = DateTime.Now };
 
-                attendanceRecords.InsertOnSubmit(signinRecord);
-                context.SubmitChanges();
+                db.AttendanceRecords.Add(signinRecord);
+                db.SaveChanges();
+                //context.SubmitChanges();
 
             }
 
@@ -182,28 +190,44 @@ namespace ARS.Controllers
             if (Session["user"] == null)
                 return RedirectToAction("Index","Home");
 
-            var context = DbHelper.getInstance().createDbContext();
+            var db = new ARSEntitis();
 
-            var attendanceRecords = context.GetTable<AttendanceRecord>();
+            //var context = DbHelper.getInstance().createDbContext();
 
+            //var attendanceRecords = context.GetTable<AttendanceRecord>();
+            var todayDate = DateTime.Now.Date;
+            var nextDate = todayDate.AddDays(1).Date;
+            var id = ((Employee)Session["user"]).id.Value;
             //没有签到记录，不允许签退
-            var query = from ar in attendanceRecords
-                        where ar.user_id == ((Employee)Session["user"]).id.Value &&
-                        ar.sign_time > DateTime.Now.Date &&
-                        ar.sign_time < DateTime.Now.AddDays(1).Date &&
+            var query = from ar in db.AttendanceRecords
+                        where ar.user_id == id &&
+                        ar.sign_time > todayDate &&
+                        ar.sign_time < nextDate &&
                         ar.type == 1
                         select ar;
             if (query.Count() == 0)
             {
                 TempData["SignOutSuccess"] = false;
+                TempData["ErrorInfo"] = "还未签到！";
             }
             else
             {
-                TempData["SignOutSuccess"] = true;
-                var signoutRecord = new AttendanceRecord() { id = null, user_id = ((Employee)Session["user"]).id.Value, type = 2, sign_time = DateTime.Now };
+                TimeSpan ts = DateTime.Now - query.Single().sign_time;
+                if(ts.Minutes<30)
+                {
+                    TempData["SignOutSuccess"] = false;
+                    TempData["ErrorInfo"] = "签到还未满30分钟！";
+                }
+                else
+                {
+                    TempData["SignOutSuccess"] = true;
+                    var signoutRecord = new AttendanceRecord() { user_id = ((Employee)Session["user"]).id.Value, type = 2, sign_time = DateTime.Now };
 
-                attendanceRecords.InsertOnSubmit(signoutRecord);
-                context.SubmitChanges();
+                    db.AttendanceRecords.Add(signoutRecord);
+                    db.SaveChanges();
+                }
+
+
             }
 
             return RedirectToAction("Index");
