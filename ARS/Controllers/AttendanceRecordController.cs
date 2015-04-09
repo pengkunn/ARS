@@ -213,7 +213,7 @@ namespace ARS.Controllers
             else
             {
                 TimeSpan ts = DateTime.Now - query.Single().sign_time;
-                if(ts.Minutes<30)
+                if(ts.TotalMinutes<30)
                 {
                     TempData["SignOutSuccess"] = false;
                     TempData["ErrorInfo"] = "签到还未满30分钟！";
